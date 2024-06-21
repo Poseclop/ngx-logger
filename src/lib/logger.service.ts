@@ -42,7 +42,12 @@ export class NGXLogger {
   }
 
   public trace(message?: any | (() => any), ...additional: any[]): void {
-    this._log(NgxLoggerLevel.TRACE, message, additional);
+    // We manually set the stack trace using a dummy Error.
+    // This is done instead of using console.trace in _log method to ensure the stack trace is kept at the highest level possible.
+    // If the dummy error has no stack, we default to printing only the message and additional parameters.
+    const _traceDummyError = new Error();
+    _traceDummyError.name = message;
+    this._log(NgxLoggerLevel.TRACE, _traceDummyError.stack || message, additional);
   }
 
   public debug(message?: any | (() => any), ...additional: any[]): void {
