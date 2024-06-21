@@ -36,10 +36,17 @@ describe('NGXLogger', () => {
       [NGXLogger],
       (logger: NGXLogger) => {
         const logSpy = spyOn(<any>logger, '_log');
+        const messageString = 'message';
 
-        logger.trace('message');
-
-        expect(logSpy).toHaveBeenCalledWith(NgxLoggerLevel.TRACE, 'message', []);
+        logger.trace(messageString);
+        const _testStackError = new Error();
+        _testStackError.name = messageString;
+        
+        expect(logSpy).toHaveBeenCalled();
+        expect(logSpy.calls.argsFor(0)[0]).toBe(NgxLoggerLevel.TRACE);
+        // We can't test the exact stack trace so we only make sure the message is included
+        expect(logSpy.calls.argsFor(0)[1]).toContain(messageString);
+        expect(logSpy.calls.argsFor(0)[2]).toEqual([]);
       }
     ));
   });
